@@ -11,6 +11,25 @@ const statusLabels: Record<string, string> = {
   withdrawn: "Withdrawn",
 };
 
+type ApplicationJob = {
+  id: string;
+  title: string;
+  company: string;
+  company_logo_url: string | null;
+  location: string | null;
+  remote_status: string;
+  employment_type: string | null;
+  category: string | null;
+};
+
+type ApplicationRow = {
+  id: string;
+  job_id: string;
+  status: string;
+  applied_at: string;
+  jobs: ApplicationJob[];
+};
+
 export default async function ApplicationsPage() {
   const supabase = await createSupabaseServerClient();
   if (!supabase) return null;
@@ -24,22 +43,7 @@ export default async function ApplicationsPage() {
     .eq("user_id", user.id)
     .order("updated_at", { ascending: false });
 
-  const rows = (applications ?? []) as Array<{
-    id: string;
-    job_id: string;
-    status: string;
-    applied_at: string;
-    jobs: {
-      id: string;
-      title: string;
-      company: string;
-      company_logo_url: string | null;
-      location: string | null;
-      remote_status: string;
-      employment_type: string | null;
-      category: string | null;
-    } | null;
-  }>;
+  const rows = (applications ?? []) as unknown as ApplicationRow[];
 
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-[#0b1220]">
@@ -62,12 +66,12 @@ export default async function ApplicationsPage() {
           <section className="mt-8 rounded-2xl border border-dashed border-[#d8e0ea] bg-white p-10 text-center shadow-sm">
             <h2 className="text-xl font-black">No applications yet</h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#667085]">Open a job, choose an application status, and it will appear here.</p>
-            <Link href="/jobs" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white hover:bg-[#0b4dcc]">Find a job</Link>
+            <Link href="/jobs" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white hover:bg-[#0b4dcc)">Find a job</Link>
           </section>
         ) : (
           <div className="mt-8 space-y-4">
             {rows.map((application) => {
-              const job = application.jobs;
+              const job = application.jobs[0];
               if (!job) return null;
               return (
                 <article key={application.id} className="rounded-2xl border border-[#e1e7ef] bg-white p-5 shadow-sm sm:p-6">
