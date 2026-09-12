@@ -21,6 +21,13 @@ type Job = {
   discovered_at: string;
 };
 
+type SearchParams = {
+  q?: string;
+  remote?: string;
+  type?: string;
+  category?: string;
+};
+
 function formatSalary(job: Job) {
   if (job.salary_min == null && job.salary_max == null) return null;
 
@@ -47,7 +54,21 @@ function label(value: string | null) {
   return value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export default async function JobsPage() {
+function buildJobsUrl(params: SearchParams) {
+  const query = new URLSearchParams();
+  if (params.q) query.set("q", params.q);
+  if (params.remote) query.set("remote", params.remote);
+  if (params.type) query.set("type", params.type);
+  if (params.category) query.set("category", params.category);
+  const value = query.toString();
+  return value ? `/jobs?${value}` : "/jobs";
+}
+
+export default async function JobsPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
@@ -69,16 +90,48 @@ export default async function JobsPage() {
 
   if (!user) redirect("/login?next=/jobs");
 
-  const { data: jobs, error } = await supabase
+  const params = await searchParams;
+  const q = params.q?.trim() ?? "";
+  const remote = params.remote ?? "";
+  const type = params.type ?? "";
+  const category = params.category ?? "";
+
+  let jobsQuery = supabase
     .from("jobs")
     .select(
       "id, title, company, company_logo_url, location, remote_status, employment_type, salary_min, salary_max, salary_currency, category, source_name, original_job_url, application_url, posted_at, discovered_at",
     )
-    .eq("status", "active")
-    .order("posted_at", { ascending: false, nullsFirst: false })
-    .order("discovered_at", { ascending: false });
+    .eq("status", "active");
+
+  if (q) {
+    const safeSearch = q.replace(/[%(),]/g, " ").trim();
+    if (safeSearch) {
+      jobsQuery = jobsQuery.or(
+        `title.ilike.%${safeSearch}%,company.ilike.%${safeSearch}%,location.ilike.%${safeSearch}%,category.ilike.%${safeSearch}%`,
+      );
+    }
+  }
+
+  if (["remote", "hybrid", "onsite"].includes(remote)) {
+    jobsQuery = jobsQuery.eq("remote_status", remote);
+  }
+
+  if (type) jobsQuery = jobsQuery.eq("employment_type", type);
+  if (category) jobsQuery = jobsQuery.eq("category", category);
+
+  const [{ data: jobs, error }, { data: categoryRows }] = await Promise.all([
+    jobsQuery
+      .order("posted_at", { ascending: false, nullsFirst: false })
+      .order("discovered_at", { ascending: false }),
+    supabase.from("jobs").select("category").eq("status", "active").not("category", "is", null),
+  ]);
 
   const typedJobs = (jobs ?? []) as Job[];
+  const categories = Array.from(
+    new Set((categoryRows ?? []).map((row) => row.category).filter(Boolean) as string[]),
+  ).sort();
+
+  const hasFilters = Boolean(q || remote || type || category);
 
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-[#0b1220]">
@@ -95,17 +148,76 @@ export default async function JobsPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8 lg:py-10">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#155eef]">Discover</p>
-            <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Remote jobs</h1>
-            <p className="mt-3 max-w-2xl leading-7 text-[#667085]">
-              Explore active remote opportunities collected from connected job sources.
-            </p>
-          </div>
-          <span className="w-fit rounded-full bg-[#eaf1ff] px-3.5 py-2 text-sm font-bold text-[#155eef]">
-            {typedJobs.length} {typedJobs.length === 1 ? "job" : "jobs"}
-          </span>
+        <div className="mb-8">
+          <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#155eef]">Discover</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Remote jobs</h1>
+          <p className="mt-3 max-w-2xl leading-7 text-[#667085]">
+            Search active remote opportunities and narrow the results by work setup, employment type, or category.
+          </p>
+        </div>
+
+        <section className="mb-7 rounded-2xl border border-[#e1e7ef] bg-white p-5 shadow-sm sm:p-6">
+          <form action="/jobs" method="get" className="grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_1fr_1fr_1fr_auto] lg:items-end">
+            <label className="block">
+              <span className="mb-2 block text-sm font-bold text-[#344054]">Search jobs</span>
+              <input
+                name="q"
+                defaultValue={q}
+                placeholder="Title, company, location..."
+                className="w-full rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm outline-none transition placeholder:text-[#98a2b3] focus:border-[#155eef] focus:ring-4 focus:ring-[#155eef]/10"
+              />
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-sm font-bold text-[#344054]">Work setup</span>
+              <select name="remote" defaultValue={remote} className="w-full rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm outline-none focus:border-[#155eef] focus:ring-4 focus:ring-[#155eef]/10">
+                <option value="">All setups</option>
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option>
+                <option value="onsite">On-site</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-sm font-bold text-[#344054]">Employment</span>
+              <select name="type" defaultValue={type} className="w-full rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm outline-none focus:border-[#155eef] focus:ring-4 focus:ring-[#155eef]/10">
+                <option value="">All types</option>
+                <option value="full_time">Full time</option>
+                <option value="part_time">Part time</option>
+                <option value="contract">Contract</option>
+                <option value="freelance">Freelance</option>
+                <option value="internship">Internship</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-sm font-bold text-[#344054]">Category</span>
+              <select name="category" defaultValue={category} className="w-full rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm outline-none focus:border-[#155eef] focus:ring-4 focus:ring-[#155eef]/10">
+                <option value="">All categories</option>
+                {categories.map((item) => (
+                  <option key={item} value={item}>{label(item)}</option>
+                ))}
+              </select>
+            </label>
+
+            <div className="flex gap-2 lg:justify-end">
+              <button type="submit" className="flex-1 rounded-xl bg-[#155eef] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0b4dcc] lg:flex-none">
+                Search
+              </button>
+              {hasFilters ? (
+                <Link href="/jobs" className="rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm font-bold text-[#475467] transition hover:border-[#155eef] hover:text-[#155eef]">
+                  Clear
+                </Link>
+              ) : null}
+            </div>
+          </form>
+        </section>
+
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-sm font-semibold text-[#667085]">
+            {typedJobs.length} {typedJobs.length === 1 ? "job" : "jobs"} found
+            {hasFilters ? " for your search" : ""}
+          </p>
         </div>
 
         {error ? (
@@ -117,17 +229,24 @@ export default async function JobsPage() {
           <section className="rounded-[2rem] border border-dashed border-[#cfd8e3] bg-white px-6 py-16 text-center shadow-sm sm:px-10">
             <div className="mx-auto grid size-16 place-items-center rounded-2xl bg-[#eff4ff] text-[#155eef]">
               <svg viewBox="0 0 24 24" className="size-8" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <path d="M4 7.5h16M7.5 4v3.5M16.5 4v3.5M5.5 20h13A1.5 1.5 0 0 0 20 18.5v-11A1.5 1.5 0 0 0 18.5 6h-13A1.5 1.5 0 0 0 4 7.5v11A1.5 1.5 0 0 0 5.5 20Z" />
-                <path d="M8 11h8M8 15h5" />
+                <path d="m21 21-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" />
               </svg>
             </div>
-            <h2 className="mt-5 text-2xl font-black">No active jobs yet</h2>
+            <h2 className="mt-5 text-2xl font-black">{hasFilters ? "No jobs match your search" : "No active jobs yet"}</h2>
             <p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-[#667085]">
-              RemoteScout is ready for job listings. Once a connected source provides active jobs, they will appear here automatically.
+              {hasFilters
+                ? "Try a different search term or remove one of the filters."
+                : "RemoteScout is ready for job listings. Once a connected source provides active jobs, they will appear here automatically."}
             </p>
-            <Link href="/dashboard" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#155eef]/20 transition hover:bg-[#0b4dcc]">
-              Back to dashboard
-            </Link>
+            {hasFilters ? (
+              <Link href="/jobs" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#155eef]/20 transition hover:bg-[#0b4dcc]">
+                Clear search
+              </Link>
+            ) : (
+              <Link href="/dashboard" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#155eef]/20 transition hover:bg-[#0b4dcc]">
+                Back to dashboard
+              </Link>
+            )}
           </section>
         ) : (
           <div className="grid gap-5 lg:grid-cols-2">
@@ -166,12 +285,8 @@ export default async function JobsPage() {
                   </dl>
 
                   <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-[#eef1f5] pt-5">
-                    <a href={job.original_job_url} target="_blank" rel="noreferrer" className="text-sm font-bold text-[#475467] hover:text-[#155eef]">
-                      View source
-                    </a>
-                    <a href={job.application_url} target="_blank" rel="noreferrer" className="rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0b4dcc]">
-                      Apply for this job
-                    </a>
+                    <a href={job.original_job_url} target="_blank" rel="noreferrer" className="text-sm font-bold text-[#475467] hover:text-[#155eef]">View source</a>
+                    <a href={job.application_url} target="_blank" rel="noreferrer" className="rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-[#0b4dcc]">Apply for this job</a>
                   </div>
                 </article>
               );
