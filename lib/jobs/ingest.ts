@@ -1,16 +1,12 @@
 import type { NormalizedJob } from "@/lib/jobs/types";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 
 export async function ingestJobs(jobs: NormalizedJob[]) {
   if (jobs.length === 0) {
     return { inserted: 0, skipped: 0 };
   }
 
-  const supabase = await createSupabaseServerClient();
-
-  if (!supabase) {
-    throw new Error("Supabase is not configured.");
-  }
+  const supabase = createSupabaseAdminClient();
 
   const rows = jobs.map((job) => ({
     title: job.title,
