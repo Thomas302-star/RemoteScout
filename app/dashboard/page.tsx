@@ -2,7 +2,11 @@ import { redirect } from "next/navigation";
 import DashboardShell from "@/components/dashboard/dashboard-shell";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-export default async function DashboardPage() {
+type DashboardPageProps = {
+  searchParams: Promise<{ verified?: string }>;
+};
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
   const supabase = await createSupabaseServerClient();
 
   if (!supabase) {
@@ -26,5 +30,11 @@ export default async function DashboardPage() {
     redirect("/login?next=/dashboard");
   }
 
-  return <DashboardShell email={user.email ?? "your account"} />;
+  const params = await searchParams;
+  return (
+    <DashboardShell
+      email={user.email ?? "your account"}
+      emailVerified={params.verified === "true"}
+    />
+  );
 }
