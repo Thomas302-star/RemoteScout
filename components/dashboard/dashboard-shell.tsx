@@ -9,6 +9,7 @@ const dashboardItems = [
   { label: "Discover jobs", href: "/jobs" },
   { label: "Saved jobs", href: "/dashboard/saved" },
   { label: "Applications", href: "/dashboard/applications" },
+  { label: "Profile", href: "/dashboard/profile" },
 ];
 
 export default function DashboardShell({ email, emailVerified = false }: { email: string; emailVerified?: boolean }) {
@@ -27,7 +28,7 @@ export default function DashboardShell({ email, emailVerified = false }: { email
       <header className="sticky top-0 z-20 border-b border-[#e4e9f0] bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
           <Link href="/" className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-xl bg-[#155eef] text-sm font-black text-white">R</span><span className="text-lg font-extrabold tracking-tight">RemoteScout</span></Link>
-          <div className="flex items-center gap-3"><span className="hidden max-w-52 truncate text-sm text-[#667085] sm:block">{email}</span><button type="button" onClick={signOut} disabled={loading} className="rounded-full border border-[#d8e0ea] bg-white px-4 py-2.5 text-sm font-semibold hover:border-[#155eef] hover:text-[#155eef] disabled:opacity-60">{loading ? "Signing out..." : "Sign out"}</button></div>
+          <div className="flex items-center gap-3"><Link href="/dashboard/profile" className="hidden max-w-52 truncate text-sm font-semibold text-[#667085] hover:text-[#155eef] sm:block">{email}</Link><button type="button" onClick={signOut} disabled={loading} className="rounded-full border border-[#d8e0ea] bg-white px-4 py-2.5 text-sm font-semibold hover:border-[#155eef] hover:text-[#155eef] disabled:opacity-60">{loading ? "Signing out..." : "Sign out"}</button></div>
         </div>
       </header>
 
@@ -46,6 +47,8 @@ export default function DashboardShell({ email, emailVerified = false }: { email
           <section id="discover" className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7"><div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Discover</p><h2 className="mt-2 text-xl font-black">Find your next remote role</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#667085]">Browse active jobs collected from connected sources.</p></div><Link href="/jobs" className="w-fit rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">Open jobs</Link></div></section>
 
           <div className="grid gap-6 md:grid-cols-2"><section id="saved" className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Saved jobs</p><h2 className="mt-2 text-xl font-black">Keep opportunities close</h2><p className="mt-3 text-sm leading-6 text-[#667085]">Save roles from any job details page and find them here.</p><Link href="/dashboard/saved" className="mt-6 inline-flex rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">View saved jobs</Link></section><section id="applications" className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Applications</p><h2 className="mt-2 text-xl font-black">Stay organized</h2><p className="mt-3 text-sm leading-6 text-[#667085]">Track jobs you have applied to and update the status as your application progresses.</p><Link href="/dashboard/applications" className="mt-6 inline-flex rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">View applications</Link></section></div>
+
+          <section className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Profile</p><h2 className="mt-2 text-xl font-black">Keep your information up to date</h2><p className="mt-2 text-sm leading-6 text-[#667085]">Update your basic profile details whenever you need to.</p></div><Link href="/dashboard/profile" className="w-fit rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">Edit profile</Link></div></section>
         </section>
       </div>
     </main>
