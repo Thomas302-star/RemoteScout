@@ -81,8 +81,8 @@ export default function LandingPage() {
             <Link href="/login" className="rounded-full border border-[#d8e0ea] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#0b1220] transition hover:border-[#155eef] hover:text-[#155eef] sm:px-4">
               Log in
             </Link>
-            <Link href="/signup" className="rounded-full bg-[#0b1220] px-3.5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#155eef] sm:px-4">
-              Sign up
+            <Link href="/signup" className="inline-flex items-center justify-center rounded-full bg-[#0b1220] px-3.5 py-2.5 text-sm font-semibold !text-white transition hover:-translate-y-0.5 hover:bg-[#155eef] sm:px-4">
+              <span className="text-white">Sign up</span>
             </Link>
           </div>
         </div>
@@ -103,8 +103,8 @@ export default function LandingPage() {
               RemoteScout brings remote opportunities from trusted sources into one organized experience, so you can spend less time searching and more time finding work that fits.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#155eef] px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-[#155eef]/20 transition hover:-translate-y-0.5 hover:bg-[#0b4dcc]">
-                Create your account <ArrowIcon />
+              <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#155eef] px-6 py-3.5 text-sm font-bold !text-white shadow-xl shadow-[#155eef]/20 transition hover:-translate-y-0.5 hover:bg-[#0b4dcc]">
+                <span className="text-white">Create your account</span> <ArrowIcon />
               </Link>
               <Link href="/login" className="inline-flex items-center justify-center rounded-full border border-[#d8e0ea] bg-white px-6 py-3.5 text-sm font-bold text-[#0b1220] transition hover:border-[#155eef] hover:text-[#155eef]">
                 Log in
@@ -215,8 +215,8 @@ export default function LandingPage() {
               <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Your next remote opportunity should not be buried across ten tabs.</h2>
               <p className="mt-4 max-w-xl leading-7 text-[#dbeafe]">RemoteScout is being built to give job seekers one focused place to discover, evaluate, and act on remote opportunities.</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-[#155eef] transition hover:-translate-y-0.5">
-                  Create your account <ArrowIcon />
+                <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold !text-[#155eef] transition hover:-translate-y-0.5">
+                  <span className="text-[#155eef]">Create your account</span> <ArrowIcon />
                 </Link>
                 <Link href="/login" className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-white/20">
                   Log in
