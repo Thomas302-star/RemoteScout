@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const categories = [
   "Development",
   "Design",
@@ -63,7 +65,7 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#f7f9fc] text-[#0b1220]">
       <header className="sticky top-0 z-50 border-b border-[#e4e9f0]/80 bg-[#f7f9fc]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
           <a href="#top" className="flex items-center gap-2.5" aria-label="RemoteScout home">
             <span className="grid size-9 place-items-center rounded-xl bg-[#155eef] text-sm font-black text-white shadow-lg shadow-[#155eef]/20">R</span>
             <span className="text-lg font-extrabold tracking-tight">RemoteScout</span>
@@ -75,9 +77,14 @@ export default function LandingPage() {
             <a className="transition hover:text-[#155eef]" href="#why-remotescout">Why RemoteScout</a>
           </nav>
 
-          <a href="#get-started" className="rounded-full bg-[#0b1220] px-4 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#155eef]">
-            Get started
-          </a>
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/login" className="rounded-full border border-[#d8e0ea] bg-white px-3.5 py-2.5 text-sm font-semibold text-[#0b1220] transition hover:border-[#155eef] hover:text-[#155eef] sm:px-4">
+              Log in
+            </Link>
+            <Link href="/signup" className="rounded-full bg-[#0b1220] px-3.5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#155eef] sm:px-4">
+              Sign up
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -96,12 +103,12 @@ export default function LandingPage() {
               RemoteScout brings remote opportunities from trusted sources into one organized experience, so you can spend less time searching and more time finding work that fits.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <a href="#how-it-works" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#155eef] px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-[#155eef]/20 transition hover:-translate-y-0.5 hover:bg-[#0b4dcc]">
-                See how it works <ArrowIcon />
-              </a>
-              <a href="#categories" className="inline-flex items-center justify-center rounded-full border border-[#d8e0ea] bg-white px-6 py-3.5 text-sm font-bold text-[#0b1220] transition hover:border-[#155eef] hover:text-[#155eef]">
-                Explore categories
-              </a>
+              <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-[#155eef] px-6 py-3.5 text-sm font-bold text-white shadow-xl shadow-[#155eef]/20 transition hover:-translate-y-0.5 hover:bg-[#0b4dcc]">
+                Create your account <ArrowIcon />
+              </Link>
+              <Link href="/login" className="inline-flex items-center justify-center rounded-full border border-[#d8e0ea] bg-white px-6 py-3.5 text-sm font-bold text-[#0b1220] transition hover:border-[#155eef] hover:text-[#155eef]">
+                Log in
+              </Link>
             </div>
           </div>
 
@@ -207,9 +214,14 @@ export default function LandingPage() {
               <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#dbeafe]">Start with a better search</p>
               <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Your next remote opportunity should not be buried across ten tabs.</h2>
               <p className="mt-4 max-w-xl leading-7 text-[#dbeafe]">RemoteScout is being built to give job seekers one focused place to discover, evaluate, and act on remote opportunities.</p>
-              <a href="#top" className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-[#155eef] transition hover:-translate-y-0.5">
-                Back to top <ArrowIcon />
-              </a>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold text-[#155eef] transition hover:-translate-y-0.5">
+                  Create your account <ArrowIcon />
+                </Link>
+                <Link href="/login" className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3.5 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-white/20">
+                  Log in
+                </Link>
+              </div>
             </div>
           </div>
         </div>
