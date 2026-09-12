@@ -13,8 +13,13 @@ const scrollFixScript = `
       history.scrollRestoration = "manual";
     }
 
+    // Remove a saved section hash before the browser can restore it on refresh.
+    if (window.location.hash) {
+      history.replaceState(null, "", window.location.pathname + window.location.search);
+    }
+
     function resetScroll() {
-      window.scrollTo(0, 0);
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
     }
 
     resetScroll();
