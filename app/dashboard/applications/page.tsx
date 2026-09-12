@@ -66,7 +66,7 @@ export default async function ApplicationsPage() {
           <section className="mt-8 rounded-2xl border border-dashed border-[#d8e0ea] bg-white p-10 text-center shadow-sm">
             <h2 className="text-xl font-black">No applications yet</h2>
             <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#667085]">Open a job, choose an application status, and it will appear here.</p>
-            <Link href="/jobs" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white hover:bg-[#0b4dcc)">Find a job</Link>
+            <Link href="/jobs" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white hover:bg-[#0b4dcc]">Find a job</Link>
           </section>
         ) : (
           <div className="mt-8 space-y-4">
