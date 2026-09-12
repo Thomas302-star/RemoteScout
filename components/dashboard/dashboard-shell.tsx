@@ -11,7 +11,13 @@ const dashboardItems = [
   { label: "Applications", href: "#applications" },
 ];
 
-export default function DashboardShell({ email }: { email: string }) {
+export default function DashboardShell({
+  email,
+  emailVerified = false,
+}: {
+  email: string;
+  emailVerified?: boolean;
+}) {
   const [loading, setLoading] = useState(false);
 
   async function signOut() {
@@ -76,6 +82,21 @@ export default function DashboardShell({ email }: { email: string }) {
         </aside>
 
         <section className="min-w-0 space-y-6">
+          {emailVerified ? (
+            <div
+              role="status"
+              className="flex items-start gap-3 rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] px-5 py-4 text-sm text-[#166534] shadow-sm"
+            >
+              <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[#dcfce7] font-bold" aria-hidden="true">
+                ✓
+              </span>
+              <div>
+                <p className="font-bold">Email verified successfully</p>
+                <p className="mt-1 text-[#15803d]">Your RemoteScout account is now verified.</p>
+              </div>
+            </div>
+          ) : null}
+
           <div id="overview" className="rounded-[2rem] border border-[#dbe6f7] bg-gradient-to-br from-[#eef4ff] via-white to-white p-7 shadow-sm sm:p-10">
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#155eef]">
               Your workspace
