@@ -22,5 +22,6 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL("/login?error=confirmation-failed", url.origin));
   }
 
-  return NextResponse.redirect(new URL(next.startsWith("/") ? next : "/dashboard", url.origin));
+  const destination = next.startsWith("/") ? next : "/dashboard";
+  return NextResponse.redirect(new URL(`${destination}?verified=true`, url.origin));
 }
