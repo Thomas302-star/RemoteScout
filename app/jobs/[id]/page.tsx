@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import SaveJobButton from "@/components/jobs/save-job-button";
+import ApplicationStatusButton from "@/components/jobs/application-status-button";
 
 type Job = {
   id: string;
@@ -71,6 +72,13 @@ export default async function JobDetailsPage({ params }: { params: Promise<{ id:
     .eq("job_id", typedJob.id)
     .maybeSingle();
 
+  const { data: application } = await supabase
+    .from("job_applications")
+    .select("id, status")
+    .eq("user_id", user.id)
+    .eq("job_id", typedJob.id)
+    .maybeSingle();
+
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-[#0b1220]">
       <header className="sticky top-0 z-20 border-b border-[#e4e9f0] bg-white/95 backdrop-blur">
@@ -108,6 +116,7 @@ export default async function JobDetailsPage({ params }: { params: Promise<{ id:
           <article className="rounded-2xl border border-[#e1e7ef] bg-white p-6 shadow-sm sm:p-8"><h2 className="text-xl font-black">Job description</h2><div className="mt-5 whitespace-pre-wrap text-sm leading-7 text-[#475467]">{typedJob.description}</div></article>
           <aside className="space-y-5">
             <section className="rounded-2xl border border-[#e1e7ef] bg-white p-6 shadow-sm"><h2 className="text-base font-black">Job details</h2><dl className="mt-4 space-y-4 text-sm">{typedJob.location ? <div><dt className="font-bold text-[#344054]">Location</dt><dd className="mt-1 text-[#667085]">{typedJob.location}</dd></div> : null}{salary ? <div><dt className="font-bold text-[#344054]">Salary</dt><dd className="mt-1 text-[#667085]">{salary}</dd></div> : null}{typedJob.experience_level ? <div><dt className="font-bold text-[#344054]">Experience</dt><dd className="mt-1 text-[#667085]">{label(typedJob.experience_level)}</dd></div> : null}<div><dt className="font-bold text-[#344054]">Source</dt><dd className="mt-1 text-[#667085]">{typedJob.source_name}</dd></div>{posted ? <div><dt className="font-bold text-[#344054]">Posted</dt><dd className="mt-1 text-[#667085]">{posted}</dd></div> : null}</dl></section>
+            <section className="rounded-2xl border border-[#e1e7ef] bg-white p-6 shadow-sm"><h2 className="text-base font-black">Application</h2><p className="mt-2 text-sm leading-6 text-[#667085]">Track this role after you apply and update its status from your applications dashboard.</p><div className="mt-4"><ApplicationStatusButton jobId={typedJob.id} applicationId={application?.id} initialStatus={application?.status as "applied" | "interviewing" | "offer" | "rejected" | "withdrawn" | undefined} /></div><Link href="/dashboard/applications" className="mt-4 inline-block text-sm font-bold text-[#155eef] hover:underline">View all applications →</Link></section>
             {typedJob.skills.length > 0 ? <section className="rounded-2xl border border-[#e1e7ef] bg-white p-6 shadow-sm"><h2 className="text-base font-black">Skills</h2><div className="mt-4 flex flex-wrap gap-2">{typedJob.skills.map((skill) => <span key={skill} className="rounded-full bg-[#f2f4f7] px-3 py-1.5 text-xs font-bold text-[#475467]">{skill}</span>)}</div></section> : null}
             <a href={typedJob.original_job_url} target="_blank" rel="noreferrer" className="block rounded-2xl border border-[#d8e0ea] bg-white p-5 text-sm font-bold text-[#475467] shadow-sm hover:border-[#155eef] hover:text-[#155eef]">View original source →</a>
           </aside>
