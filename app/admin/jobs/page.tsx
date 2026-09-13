@@ -16,9 +16,13 @@ export default async function AdminJobsPage() {
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-[#0b1220]">
       <header className="border-b border-[#e4e9f0] bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-5 py-4 lg:px-8">
           <Link href="/dashboard" className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-xl bg-[#155eef] text-sm font-black text-white">R</span><span className="text-lg font-extrabold tracking-tight">RemoteScout Admin</span></Link>
-          <Link href="/dashboard" className="rounded-full border border-[#d8e0ea] bg-white px-4 py-2.5 text-sm font-semibold hover:border-[#155eef] hover:text-[#155eef]">Back to dashboard</Link>
+          <nav className="flex items-center gap-2" aria-label="Admin sections">
+            <Link href="/admin/jobs" className="rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white">Jobs</Link>
+            <Link href="/admin/users" className="rounded-full border border-[#d8e0ea] bg-white px-4 py-2.5 text-sm font-semibold hover:border-[#155eef] hover:text-[#155eef]">Users</Link>
+            <Link href="/dashboard" className="rounded-full border border-[#d8e0ea] bg-white px-4 py-2.5 text-sm font-semibold hover:border-[#155eef] hover:text-[#155eef]">Dashboard</Link>
+          </nav>
         </div>
       </header>
       <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8">
