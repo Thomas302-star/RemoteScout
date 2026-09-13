@@ -59,8 +59,12 @@ export default function DashboardShell({
           ))}
           {isAdmin ? (
             <>
-              <Link href="/admin/jobs" className="shrink-0 rounded-full bg-[#0b1220] px-4 py-2.5 text-sm font-bold text-white">Admin jobs</Link>
-              <Link href="/admin/users" className="shrink-0 rounded-full border border-[#0b1220] bg-white px-4 py-2.5 text-sm font-bold text-[#0b1220]">Admin users</Link>
+              <Link href="/admin/jobs" className="shrink-0 rounded-full border border-[#155eef] bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#0b4dcc]">
+                Add / Manage Jobs
+              </Link>
+              <Link href="/admin/users" className="shrink-0 rounded-full border border-[#0b1220] bg-white px-4 py-2.5 text-sm font-bold text-[#0b1220] hover:bg-[#f8fafc]">
+                Manage Users
+              </Link>
             </>
           ) : null}
         </nav>
@@ -79,8 +83,8 @@ export default function DashboardShell({
               {isAdmin ? (
                 <div className="mt-3 space-y-1 border-t border-[#eef2f6] pt-3">
                   <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Admin</p>
-                  <Link href="/admin/jobs" className="block rounded-xl bg-[#0b1220] px-3 py-2.5 text-sm font-bold text-white hover:bg-[#1d2939]">Admin jobs</Link>
-                  <Link href="/admin/users" className="block rounded-xl px-3 py-2.5 text-sm font-bold text-[#475467] hover:bg-[#f8fafc] hover:text-[#0b1220]">Admin users</Link>
+                  <Link href="/admin/jobs" className="block rounded-xl border border-[#155eef] bg-[#155eef] px-3 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">Add / Manage Jobs</Link>
+                  <Link href="/admin/users" className="block rounded-xl border border-[#d8e0ea] bg-white px-3 py-2.5 text-sm font-bold text-[#475467] hover:border-[#155eef] hover:text-[#0b1220]">Manage Users</Link>
                 </div>
               ) : null}
             </div>
