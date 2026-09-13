@@ -209,7 +209,7 @@ export default function LandingPage() {
             <div className="relative max-w-2xl">
               <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#dbeafe]">Start with a better search</p>
               <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Your next remote opportunity should not be buried across ten tabs.</h2>
-              <p className="mt-4 max-w-xl leading-7 text-[#dbeafe]">RemoteScout is being built to give job seekers one focused place to discover, evaluate, and act on remote opportunities.</p>
+              <p className="mt-4 max-w-xl leading-7 text-[#dbeafe]">RemoteScout gives job seekers one focused place to discover, evaluate, and act on remote opportunities.</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold !text-[#155eef] transition hover:-translate-y-0.5">
                   <span className="text-[#155eef]">Create your account</span> <ArrowIcon />
