@@ -38,9 +38,9 @@ export default async function AdminUsersPage() {
       headline: profile?.headline ?? "",
       location: profile?.location ?? "",
       createdAt: item.created_at,
-      lastSignInAt: item.last_sign_in_at,
-      bannedUntil: item.banned_until,
-      emailConfirmedAt: item.email_confirmed_at,
+      lastSignInAt: item.last_sign_in_at ?? null,
+      bannedUntil: item.banned_until ?? null,
+      emailConfirmedAt: item.email_confirmed_at ?? null,
       isCurrentAdmin: item.id === user.id,
     };
   });
