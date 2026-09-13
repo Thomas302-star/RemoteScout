@@ -92,10 +92,6 @@ export default function LandingPage() {
         <div className="pointer-events-none absolute left-1/2 top-0 h-[560px] w-[760px] -translate-x-1/2 rounded-full bg-[#dbeafe] blur-3xl opacity-60" />
         <div className="relative mx-auto grid max-w-7xl gap-14 px-5 pb-20 pt-16 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:px-8 lg:pb-28 lg:pt-24">
           <div>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#d9e2ef] bg-white px-3.5 py-2 text-xs font-semibold text-[#155eef] shadow-sm">
-              <span className="size-1.5 rounded-full bg-[#155eef]" />
-              Remote jobs, organized
-            </div>
             <h1 className="max-w-3xl text-5xl font-black tracking-[-0.045em] sm:text-6xl lg:text-7xl">
               Find remote jobs without the endless search.
             </h1>
@@ -213,7 +209,7 @@ export default function LandingPage() {
             <div className="relative max-w-2xl">
               <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#dbeafe]">Start with a better search</p>
               <h2 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Your next remote opportunity should not be buried across ten tabs.</h2>
-              <p className="mt-4 max-w-xl leading-7 text-[#dbeafe]">RemoteScout is being built to give job seekers one focused place to discover, evaluate, and act on remote opportunities.</p>
+              <p className="mt-4 max-w-xl leading-7 text-[#dbeafe]">RemoteScout gives job seekers one focused place to discover, evaluate, and act on remote opportunities.</p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Link href="/signup" className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-bold !text-[#155eef] transition hover:-translate-y-0.5">
                   <span className="text-[#155eef]">Create your account</span> <ArrowIcon />
