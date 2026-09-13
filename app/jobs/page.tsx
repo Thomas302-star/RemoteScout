@@ -2,119 +2,33 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-type Job = {
-  id: string;
-  title: string;
-  company: string;
-  company_logo_url: string | null;
-  location: string | null;
-  remote_status: "remote" | "hybrid" | "onsite";
-  employment_type: string | null;
-  salary_min: number | null;
-  salary_max: number | null;
-  salary_currency: string | null;
-  category: string | null;
-  source_name: string;
-  original_job_url: string;
-  application_url: string;
-  posted_at: string | null;
-  discovered_at: string;
-};
-
+type Job = { id: string; title: string; company: string; company_logo_url: string | null; location: string | null; remote_status: "remote" | "hybrid" | "onsite"; employment_type: string | null; salary_min: number | null; salary_max: number | null; salary_currency: string | null; category: string | null; source_name: string; original_job_url: string; application_url: string; posted_at: string | null; discovered_at: string };
 type SearchParams = { q?: string; remote?: string; type?: string; category?: string };
-
-const label = (value: string | null) =>
-  value ? value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : null;
-
-function formatSalary(job: Job) {
-  if (job.salary_min == null && job.salary_max == null) return null;
-  const currency = job.salary_currency ? `${job.salary_currency} ` : "";
-  const format = (value: number) => Math.round(value).toLocaleString();
-  if (job.salary_min != null && job.salary_max != null) return `${currency}${format(job.salary_min)} – ${currency}${format(job.salary_max)}`;
-  if (job.salary_min != null) return `From ${currency}${format(job.salary_min)}`;
-  return `Up to ${currency}${format(job.salary_max ?? 0)}`;
-}
-
-function formatDate(value: string | null) {
-  if (!value) return null;
-  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(new Date(value));
-}
+const label = (value: string | null) => value ? value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase()) : null;
+function formatSalary(job: Job) { if (job.salary_min == null && job.salary_max == null) return null; const currency = job.salary_currency ? `${job.salary_currency} ` : ""; const f = (v: number) => Math.round(v).toLocaleString(); if (job.salary_min != null && job.salary_max != null) return `${currency}${f(job.salary_min)} – ${currency}${f(job.salary_max)}`; if (job.salary_min != null) return `From ${currency}${f(job.salary_min)}`; return `Up to ${currency}${f(job.salary_max ?? 0)}`; }
+function formatDate(value: string | null) { return value ? new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(new Date(value)) : null; }
 
 export default async function JobsPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const supabase = await createSupabaseServerClient();
-  if (!supabase) return <main className="grid min-h-screen place-items-center bg-[#f7f9fc] p-6 text-center"><div><h1 className="text-2xl font-black">Supabase setup required</h1><p className="mt-3 text-[#667085]">Add the Supabase environment variables to use the jobs directory.</p></div></main>;
-
+  if (!supabase) return <main className="grid min-h-screen place-items-center bg-[#f5f4ef] p-6 text-center"><div><h1 className="text-2xl font-black">Supabase setup required</h1><p className="mt-3 text-[#6c7169]">Add the Supabase environment variables to use the jobs directory.</p></div></main>;
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login?next=/jobs");
-
-  const params = await searchParams;
-  const q = params.q?.trim() ?? "";
-  const remote = params.remote ?? "";
-  const type = params.type ?? "";
-  const category = params.category ?? "";
-
+  const params = await searchParams; const q = params.q?.trim() ?? ""; const remote = params.remote ?? ""; const type = params.type ?? ""; const category = params.category ?? "";
   let query = supabase.from("jobs").select("id,title,company,company_logo_url,location,remote_status,employment_type,salary_min,salary_max,salary_currency,category,source_name,original_job_url,application_url,posted_at,discovered_at").eq("status", "active");
-  if (q) {
-    const safe = q.replace(/[%(),]/g, " ").trim();
-    if (safe) query = query.or(`title.ilike.%${safe}%,company.ilike.%${safe}%,location.ilike.%${safe}%,category.ilike.%${safe}%`);
-  }
+  if (q) { const safe = q.replace(/[%(),]/g, " ").trim(); if (safe) query = query.or(`title.ilike.%${safe}%,company.ilike.%${safe}%,location.ilike.%${safe}%,category.ilike.%${safe}%`); }
   if (["remote", "hybrid", "onsite"].includes(remote)) query = query.eq("remote_status", remote);
   if (type) query = query.eq("employment_type", type);
   if (category) query = query.eq("category", category);
+  const [{ data: jobs, error }, { data: categoryRows }] = await Promise.all([query.order("posted_at", { ascending: false, nullsFirst: false }).order("discovered_at", { ascending: false }), supabase.from("jobs").select("category").eq("status", "active").not("category", "is", null)]);
+  const typedJobs = (jobs ?? []) as Job[]; const categories = Array.from(new Set((categoryRows ?? []).map((row) => row.category).filter(Boolean) as string[])).sort(); const hasFilters = Boolean(q || remote || type || category);
 
-  const [{ data: jobs, error }, { data: categoryRows }] = await Promise.all([
-    query.order("posted_at", { ascending: false, nullsFirst: false }).order("discovered_at", { ascending: false }),
-    supabase.from("jobs").select("category").eq("status", "active").not("category", "is", null),
-  ]);
-
-  const typedJobs = (jobs ?? []) as Job[];
-  const categories = Array.from(new Set((categoryRows ?? []).map((row) => row.category).filter(Boolean) as string[])).sort();
-  const hasFilters = Boolean(q || remote || type || category);
-
-  return (
-    <main className="min-h-screen bg-[#f7f9fc] text-[#0b1220]">
-      <header className="sticky top-0 z-20 border-b border-[#e4e9f0] bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-          <Link href="/dashboard" className="flex items-center gap-2.5"><span className="grid size-9 place-items-center rounded-xl bg-[#155eef] text-sm font-black text-white">R</span><span className="text-lg font-extrabold">RemoteScout</span></Link>
-          <Link href="/dashboard" className="rounded-full border border-[#d8e0ea] px-4 py-2.5 text-sm font-semibold hover:border-[#155eef] hover:text-[#155eef]">Dashboard</Link>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-7xl px-5 py-8 lg:px-8 lg:py-10">
-        <div className="mb-8"><p className="text-sm font-bold uppercase tracking-[0.16em] text-[#155eef]">Discover</p><h1 className="mt-2 text-3xl font-black sm:text-4xl">Remote jobs</h1><p className="mt-3 max-w-2xl leading-7 text-[#667085]">Search active remote opportunities and narrow results by work setup, employment type, or category.</p></div>
-
-        <section className="mb-7 rounded-2xl border border-[#e1e7ef] bg-white p-5 shadow-sm sm:p-6">
-          <form action="/jobs" method="get" className="grid gap-4 lg:grid-cols-[minmax(0,1.7fr)_1fr_1fr_1fr_auto] lg:items-end">
-            <label><span className="mb-2 block text-sm font-bold text-[#344054]">Search jobs</span><input name="q" defaultValue={q} placeholder="Title, company, location..." className="w-full rounded-xl border border-[#d8e0ea] px-4 py-3 text-sm outline-none focus:border-[#155eef] focus:ring-4 focus:ring-[#155eef]/10" /></label>
-            <label><span className="mb-2 block text-sm font-bold text-[#344054]">Work setup</span><select name="remote" defaultValue={remote} className="w-full rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm"><option value="">All setups</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">On-site</option></select></label>
-            <label><span className="mb-2 block text-sm font-bold text-[#344054]">Employment</span><select name="type" defaultValue={type} className="w-full rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm"><option value="">All types</option><option value="full_time">Full time</option><option value="part_time">Part time</option><option value="contract">Contract</option><option value="freelance">Freelance</option><option value="internship">Internship</option></select></label>
-            <label><span className="mb-2 block text-sm font-bold text-[#344054]">Category</span><select name="category" defaultValue={category} className="w-full rounded-xl border border-[#d8e0ea] bg-white px-4 py-3 text-sm"><option value="">All categories</option>{categories.map((item) => <option key={item} value={item}>{label(item)}</option>)}</select></label>
-            <div className="flex gap-2"><button type="submit" className="flex-1 rounded-xl bg-[#155eef] px-5 py-3 text-sm font-bold text-white hover:bg-[#0b4dcc]">Search</button>{hasFilters ? <Link href="/jobs" className="rounded-xl border border-[#d8e0ea] px-4 py-3 text-sm font-bold">Clear</Link> : null}</div>
-          </form>
-        </section>
-
-        <p className="mb-5 text-sm font-semibold text-[#667085]">{typedJobs.length} {typedJobs.length === 1 ? "job" : "jobs"} found{hasFilters ? " for your search" : ""}</p>
-
-        {error ? <section className="rounded-2xl border border-[#fecaca] bg-white p-7"><h2 className="text-lg font-black">We could not load the jobs</h2><p className="mt-2 text-sm text-[#667085]">Please try again later.</p></section> : typedJobs.length === 0 ? (
-          <section className="rounded-[2rem] border border-dashed border-[#cfd8e3] bg-white px-6 py-16 text-center"><h2 className="text-2xl font-black">{hasFilters ? "No jobs match your search" : "No active jobs yet"}</h2><p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-[#667085]">{hasFilters ? "Try a different search term or remove a filter." : "Once connected sources provide active jobs, they will appear here."}</p>{hasFilters ? <Link href="/jobs" className="mt-6 inline-flex rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white">Clear search</Link> : null}</section>
-        ) : (
-          <div className="grid gap-5 lg:grid-cols-2">
-            {typedJobs.map((job) => {
-              const salary = formatSalary(job);
-              const posted = formatDate(job.posted_at ?? job.discovered_at);
-              return <article key={job.id} className="group rounded-2xl border border-[#e1e7ef] bg-white p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-[#bfd0ee] hover:shadow-md">
-                <Link href={`/jobs/${job.id}`} className="block rounded-xl outline-none focus-visible:ring-4 focus-visible:ring-[#155eef]/20">
-                  <div className="flex gap-4"><div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-[#e4e9f0] bg-[#f8fafc] text-lg font-black text-[#155eef]">{job.company_logo_url ? <img src={job.company_logo_url} alt="" className="size-full object-cover" /> : job.company.charAt(0).toUpperCase()}</div><div className="min-w-0 flex-1"><h2 className="text-lg font-black leading-6 group-hover:text-[#155eef]">{job.title}</h2><p className="mt-1 font-semibold text-[#475467]">{job.company}</p></div></div>
-                  <div className="mt-5 flex flex-wrap gap-2 text-xs font-bold"><span className="rounded-full bg-[#ecfdf3] px-3 py-1.5 text-[#067647]">{label(job.remote_status)}</span>{job.employment_type ? <span className="rounded-full bg-[#f2f4f7] px-3 py-1.5 text-[#475467]">{label(job.employment_type)}</span> : null}{job.category ? <span className="rounded-full bg-[#f2f4f7] px-3 py-1.5 text-[#475467]">{label(job.category)}</span> : null}</div>
-                  <dl className="mt-5 grid gap-3 text-sm text-[#667085] sm:grid-cols-2">{job.location ? <div><dt className="font-bold text-[#344054]">Location</dt><dd className="mt-1">{job.location}</dd></div> : null}{salary ? <div><dt className="font-bold text-[#344054]">Salary</dt><dd className="mt-1">{salary}</dd></div> : null}<div><dt className="font-bold text-[#344054]">Source</dt><dd className="mt-1">{job.source_name}</dd></div>{posted ? <div><dt className="font-bold text-[#344054]">Posted</dt><dd className="mt-1">{posted}</dd></div> : null}</dl>
-                  <div className="mt-5 text-sm font-bold text-[#155eef]">View job details →</div>
-                </Link>
-                <div className="mt-3 flex flex-wrap gap-2 border-t border-[#eef1f5] pt-3"><a href={job.original_job_url} target="_blank" rel="noreferrer" className="rounded-xl border border-[#d8e0ea] px-4 py-2.5 text-sm font-bold text-[#475467] hover:border-[#155eef] hover:text-[#155eef]">View source</a><a href={job.application_url} target="_blank" rel="noreferrer" className="rounded-xl bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">Apply for this job</a></div>
-              </article>;
-            })}
-          </div>
-        )}
-      </div>
-    </main>
-  );
+  return <main className="min-h-screen bg-[#f5f4ef] text-[#171916]">
+    <header className="sticky top-0 z-20 border-b border-[#dedfd8] bg-[#f5f4ef]/95 backdrop-blur-xl"><div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8"><Link href="/dashboard" className="flex items-center gap-3"><span className="grid size-9 place-items-center bg-[#174c3a] text-[11px] font-black text-[#d9ef62]">RS</span><span className="text-[17px] font-black">RemoteScout</span></Link><Link href="/dashboard" className="border border-[#cfd2c8] bg-white px-4 py-2.5 text-xs font-black hover:border-[#174c3a]">Dashboard</Link></div></header>
+    <div className="mx-auto max-w-7xl px-5 py-9 lg:px-8 lg:py-12">
+      <div className="border-b-2 border-[#171916] pb-8"><p className="text-[10px] font-black uppercase tracking-[.18em] text-[#174c3a]">Discover</p><div className="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between"><div><h1 className="text-4xl font-black tracking-[-.055em] sm:text-5xl">Remote jobs.</h1><p className="mt-3 max-w-xl text-sm leading-7 text-[#6c7169]">Search active opportunities and focus on roles worth your time.</p></div><p className="text-xs font-black text-[#6c7169]">{typedJobs.length} {typedJobs.length === 1 ? "job" : "jobs"} found</p></div></div>
+      <section className="my-7 border border-[#cfd2c8] bg-white p-4 sm:p-5"><form action="/jobs" method="get" className="grid gap-3 lg:grid-cols-[minmax(0,1.7fr)_1fr_1fr_1fr_auto]"><label><span className="sr-only">Search jobs</span><input name="q" defaultValue={q} placeholder="Search title, company, location..." className="w-full border border-[#d8dad3] bg-[#fafaf7] px-4 py-3 text-sm outline-none focus:border-[#174c3a]" /></label><select name="remote" defaultValue={remote} className="border border-[#d8dad3] bg-[#fafaf7] px-4 py-3 text-sm"><option value="">All work setups</option><option value="remote">Remote</option><option value="hybrid">Hybrid</option><option value="onsite">On-site</option></select><select name="type" defaultValue={type} className="border border-[#d8dad3] bg-[#fafaf7] px-4 py-3 text-sm"><option value="">All employment</option><option value="full_time">Full time</option><option value="part_time">Part time</option><option value="contract">Contract</option><option value="freelance">Freelance</option><option value="internship">Internship</option></select><select name="category" defaultValue={category} className="border border-[#d8dad3] bg-[#fafaf7] px-4 py-3 text-sm"><option value="">All categories</option>{categories.map((item) => <option key={item} value={item}>{label(item)}</option>)}</select><div className="flex gap-2"><button type="submit" className="bg-[#174c3a] px-5 py-3 text-xs font-black text-white">Search</button>{hasFilters ? <Link href="/jobs" className="border border-[#d8dad3] px-4 py-3 text-xs font-black">Clear</Link> : null}</div></form></section>
+      {error ? <section className="border border-red-200 bg-white p-8"><h2 className="font-black">We could not load the jobs</h2><p className="mt-2 text-sm text-[#6c7169]">Please try again later.</p></section> : typedJobs.length === 0 ? <section className="border border-dashed border-[#bfc3ba] bg-white px-6 py-20 text-center"><p className="text-[10px] font-black uppercase tracking-[.16em] text-[#174c3a]">Nothing here yet</p><h2 className="mt-3 text-2xl font-black">{hasFilters ? "No jobs match your search" : "No active jobs yet"}</h2><p className="mx-auto mt-3 max-w-lg text-sm leading-6 text-[#6c7169]">{hasFilters ? "Try a different search term or clear a filter." : "Active opportunities will appear here when available."}</p>{hasFilters ? <Link href="/jobs" className="mt-6 inline-flex bg-[#174c3a] px-5 py-3 text-xs font-black text-white">Clear search</Link> : null}</section> :
+      <div className="divide-y-2 divide-[#dedfd8] border-y-2 border-[#171916]">{typedJobs.map((job) => { const salary = formatSalary(job); const posted = formatDate(job.posted_at ?? job.discovered_at); return <article key={job.id} className="group bg-white px-4 py-6 transition hover:bg-[#fafaf7] sm:px-6"><div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between"><Link href={`/jobs/${job.id}`} className="min-w-0 flex-1"><div className="flex gap-4"><div className="grid size-12 shrink-0 place-items-center overflow-hidden bg-[#174c3a] text-lg font-black text-[#d9ef62]">{job.company_logo_url ? <img src={job.company_logo_url} alt="" className="size-full object-cover" /> : job.company.charAt(0).toUpperCase()}</div><div className="min-w-0"><h2 className="text-lg font-black group-hover:text-[#174c3a]">{job.title}</h2><p className="mt-1 text-sm font-bold text-[#535850]">{job.company}</p><div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-[#6c7169]"><span>{label(job.remote_status)}</span>{job.location ? <span>{job.location}</span> : null}{job.employment_type ? <span>{label(job.employment_type)}</span> : null}{job.category ? <span>{label(job.category)}</span> : null}</div></div></div></Link><div className="shrink-0 lg:min-w-44 lg:text-right"><p className="text-sm font-black text-[#174c3a]">{salary ?? "Salary not listed"}</p>{posted ? <p className="mt-2 text-[11px] font-semibold text-[#858a82]">Posted {posted}</p> : null}</div></div><div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-[#ecece6] pt-4"><span className="text-[11px] font-bold uppercase tracking-wide text-[#858a82]">Source: {job.source_name}</span><div className="flex gap-2"><a href={job.original_job_url} target="_blank" rel="noreferrer" className="border border-[#d8dad3] px-3.5 py-2.5 text-xs font-black">Source</a><a href={job.application_url} target="_blank" rel="noreferrer" className="bg-[#174c3a] px-3.5 py-2.5 text-xs font-black text-white">Apply →</a></div></div></article>; })}</div>}
+    </div>
+  </main>;
 }
