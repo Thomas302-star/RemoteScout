@@ -32,10 +32,6 @@ export default function AuthShell({ mode }: { mode: "login" | "signup" }) {
             </Link>
           </p>
         </section>
-
-        <p className="mt-6 text-center text-xs leading-5 text-[#8a95a5]">
-          RemoteScout only uses your account to provide access to the product. Job discovery features will be added in later V1 features.
-        </p>
       </div>
     </main>
   );
