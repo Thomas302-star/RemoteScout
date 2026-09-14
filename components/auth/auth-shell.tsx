@@ -1,5 +1,5 @@
 import Link from "next/link";
-import AuthForm from "@/components/auth/auth-form";
+import AuthForm from "@/components/auth/auth-form-new";
 
 export default function AuthShell({ mode }: { mode: "login" | "signup" }) {
   const isLogin = mode === "login";
