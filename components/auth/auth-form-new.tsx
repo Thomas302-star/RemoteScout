@@ -22,13 +22,11 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
     event.preventDefault();
     setError("");
     setMessage("");
-
     const supabase = createSupabaseBrowserClient();
     if (!supabase) {
       setError("Supabase is not configured yet. Add the Supabase environment variables to continue.");
       return;
     }
-
     setLoading(true);
     if (isLogin) {
       const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
@@ -40,7 +38,6 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
       window.location.href = "/dashboard";
       return;
     }
-
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
@@ -49,7 +46,6 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
         emailRedirectTo: `${window.location.origin}/auth/callback?next=/dashboard`,
       },
     });
-
     if (signUpError) {
       setError(signUpError.message);
       setLoading(false);
@@ -72,10 +68,7 @@ export default function AuthForm({ mode }: { mode: AuthMode }) {
         <div><label htmlFor="country" className="mb-2 block text-sm font-semibold text-[#0b1220]">Country</label><input id="country" name="country" type="text" autoComplete="country-name" required value={country} onChange={(event) => setCountry(event.target.value)} className={inputClass} placeholder="e.g. Nigeria" /></div>
       </> : null}
       <div><label htmlFor="email" className="mb-2 block text-sm font-semibold text-[#0b1220]">Email address</label><input id="email" name="email" type="email" autoComplete="email" required value={email} onChange={(event) => setEmail(event.target.value)} className={inputClass} placeholder="you@example.com" /></div>
-      <div>
-        <div className="mb-2 flex items-center justify-between gap-4"><label htmlFor="password" className="block text-sm font-semibold text-[#0b1220]">Password</label>{isLogin ? <Link href="/forgot-password" className="text-sm font-bold text-[#155eef] hover:underline">Forgot password?</Link> : null}</div>
-        <div className="relative"><input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete={isLogin ? "current-password" : "new-password"} minLength={6} required value={password} onChange={(event) => setPassword(event.target.value)} className={`${inputClass} pr-12`} placeholder="At least 6 characters" /><button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Hide password" : "Show password"} title={showPassword ? "Hide password" : "Show password"} className="absolute right-3 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-[#667085] transition hover:bg-[#f2f4f7] hover:text-[#155eef] focus:outline-none focus:ring-2 focus:ring-[#155eef]/20">{showPassword ? "◉" : "○"}</button></div>
-      </div>
+      <div><div className="mb-2 flex items-center justify-between gap-4"><label htmlFor="password" className="block text-sm font-semibold text-[#0b1220]">Password</label>{isLogin ? <Link href="/forgot-password" className="text-sm font-bold text-[#155eef] hover:underline">Forgot password?</Link> : null}</div><div className="relative"><input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete={isLogin ? "current-password" : "new-password"} minLength={6} required value={password} onChange={(event) => setPassword(event.target.value)} className={`${inputClass} pr-12`} placeholder="At least 6 characters" /><button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Hide password" : "Show password"} title={showPassword ? "Hide password" : "Show password"} className="absolute right-3 top-1/2 grid size-9 -translate-y-1/2 place-items-center rounded-full text-[#667085] transition hover:bg-[#f2f4f7] hover:text-[#155eef] focus:outline-none focus:ring-2 focus:ring-[#155eef]/20">{showPassword ? "◉" : "○"}</button></div></div>
       {error ? <div role="alert" className="rounded-2xl border border-[#fecaca] bg-[#fff1f2] px-4 py-3 text-sm leading-6 text-[#b42318]">{error}</div> : null}
       {message ? <div role="status" className="rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] px-4 py-3 text-sm leading-6 text-[#166534]">{message}</div> : null}
       <button type="submit" disabled={loading} className="w-full rounded-2xl bg-[#155eef] px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-[#155eef]/20 transition hover:bg-[#0b4dcc] disabled:cursor-not-allowed disabled:opacity-60">{loading ? "Please wait..." : isLogin ? "Sign in" : "Create account"}</button>
