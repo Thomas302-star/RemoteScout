@@ -32,37 +32,37 @@ export default function DashboardShell({
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f9fc] text-[#0b1220]">
+    <main className="min-h-screen overflow-x-hidden bg-[#f7f9fc] text-[#0b1220]">
       <header className="sticky top-0 z-20 border-b border-[#e4e9f0] bg-white/95 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-          <Link href="/" className="flex items-center gap-2.5">
-            <span className="grid size-9 place-items-center rounded-xl bg-[#155eef] text-sm font-black text-white">R</span>
-            <span className="text-lg font-extrabold tracking-tight">RemoteScout</span>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 sm:px-5 sm:py-4 lg:px-8">
+          <Link href="/" className="flex min-w-0 items-center gap-2.5">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#155eef] text-sm font-black text-white">R</span>
+            <span className="truncate text-base font-extrabold tracking-tight sm:text-lg">RemoteScout</span>
           </Link>
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <Link href="/dashboard/profile" className="hidden max-w-52 truncate text-sm font-semibold text-[#667085] hover:text-[#155eef] sm:block">
               {email}
             </Link>
-            <button type="button" onClick={signOut} disabled={loading} className="rounded-full border border-[#d8e0ea] bg-white px-4 py-2.5 text-sm font-semibold hover:border-[#155eef] hover:text-[#155eef] disabled:opacity-60">
+            <button type="button" onClick={signOut} disabled={loading} className="shrink-0 rounded-full border border-[#d8e0ea] bg-white px-3.5 py-2.5 text-xs font-semibold hover:border-[#155eef] hover:text-[#155eef] disabled:opacity-60 sm:px-4 sm:text-sm">
               {loading ? "Signing out..." : "Sign out"}
             </button>
           </div>
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-5 pt-4 lg:px-8">
-        <nav className="flex gap-2 overflow-x-auto pb-2 lg:hidden" aria-label="Dashboard navigation">
+      <div className="mx-auto max-w-7xl px-4 pt-3 sm:px-5 sm:pt-4 lg:px-8">
+        <nav className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-2 lg:hidden" aria-label="Dashboard navigation">
           {dashboardItems.map((item) => (
-            <Link key={item.label} href={item.href} className="shrink-0 rounded-full border border-[#d8e0ea] bg-white px-4 py-2.5 text-sm font-semibold text-[#475467] hover:border-[#155eef] hover:text-[#155eef]">
+            <Link key={item.label} href={item.href} className="shrink-0 whitespace-nowrap rounded-full border border-[#d8e0ea] bg-white px-3.5 py-2.5 text-xs font-semibold text-[#475467] hover:border-[#155eef] hover:text-[#155eef] sm:px-4 sm:text-sm">
               {item.label}
             </Link>
           ))}
           {isAdmin ? (
             <>
-              <Link href="/admin/jobs" className="shrink-0 rounded-full border border-[#155eef] bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-[#0b4dcc]">
+              <Link href="/admin/jobs" className="shrink-0 whitespace-nowrap rounded-full border border-[#155eef] bg-[#155eef] px-3.5 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-[#0b4dcc] sm:px-4 sm:text-sm">
                 Add / Manage Jobs
               </Link>
-              <Link href="/admin/users" className="shrink-0 rounded-full border border-[#0b1220] bg-white px-4 py-2.5 text-sm font-bold text-[#0b1220] hover:bg-[#f8fafc]">
+              <Link href="/admin/users" className="shrink-0 whitespace-nowrap rounded-full border border-[#0b1220] bg-white px-3.5 py-2.5 text-xs font-bold text-[#0b1220] hover:bg-[#f8fafc] sm:px-4 sm:text-sm">
                 Manage Users
               </Link>
             </>
@@ -70,7 +70,7 @@ export default function DashboardShell({
         </nav>
       </div>
 
-      <div className="mx-auto grid max-w-7xl gap-6 px-5 py-6 lg:grid-cols-[220px_1fr] lg:px-8 lg:py-8">
+      <div className="mx-auto grid max-w-7xl gap-5 px-4 py-5 sm:gap-6 sm:px-5 sm:py-6 lg:grid-cols-[220px_1fr] lg:px-8 lg:py-8">
         <aside className="hidden lg:block">
           <nav className="sticky top-24 rounded-2xl border border-[#e1e7ef] bg-white p-3 shadow-sm">
             <p className="px-3 pb-2 text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Workspace</p>
@@ -91,25 +91,25 @@ export default function DashboardShell({
           </nav>
         </aside>
 
-        <section className="min-w-0 space-y-6">
+        <section className="min-w-0 space-y-5 sm:space-y-6">
           {emailVerified ? (
-            <div role="status" className="flex items-start gap-3 rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] px-5 py-4 text-sm text-[#166534] shadow-sm">
+            <div role="status" className="flex items-start gap-3 rounded-2xl border border-[#bbf7d0] bg-[#f0fdf4] px-4 py-4 text-sm text-[#166534] shadow-sm sm:px-5">
               <span className="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-[#dcfce7] font-bold">✓</span>
-              <div><p className="font-bold">Email verified successfully</p><p className="mt-1 text-[#15803d]">Your RemoteScout account is now verified.</p></div>
+              <div className="min-w-0"><p className="font-bold">Email verified successfully</p><p className="mt-1 text-[#15803d]">Your RemoteScout account is now verified.</p></div>
             </div>
           ) : null}
 
-          <div id="overview" className="rounded-[2rem] border border-[#dbe6f7] bg-gradient-to-br from-[#eef4ff] via-white to-white p-7 shadow-sm sm:p-10">
+          <div id="overview" className="rounded-[1.5rem] border border-[#dbe6f7] bg-gradient-to-br from-[#eef4ff] via-white to-white p-5 shadow-sm sm:rounded-[2rem] sm:p-8 lg:p-10">
             <p className="text-sm font-bold uppercase tracking-[0.16em] text-[#155eef]">Your workspace</p>
             <h1 className="mt-3 text-3xl font-black tracking-tight sm:text-4xl">Welcome to RemoteScout.</h1>
             <p className="mt-4 max-w-2xl leading-7 text-[#667085]">Your account is ready. Discover remote opportunities, save the ones you like, and keep track of applications as you move through the process.</p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/jobs" className="rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#155eef]/20 hover:bg-[#0b4dcc]">Browse remote jobs</Link>
-              <Link href="/dashboard/applications" className="rounded-full border border-[#d8e0ea] bg-white px-5 py-3 text-sm font-bold hover:border-[#155eef] hover:text-[#155eef]">Track applications</Link>
+            <div className="mt-6 flex flex-col gap-3 sm:mt-7 sm:flex-row">
+              <Link href="/jobs" className="inline-flex w-full items-center justify-center rounded-full bg-[#155eef] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-[#155eef]/20 hover:bg-[#0b4dcc] sm:w-auto">Browse remote jobs</Link>
+              <Link href="/dashboard/applications" className="inline-flex w-full items-center justify-center rounded-full border border-[#d8e0ea] bg-white px-5 py-3 text-sm font-bold hover:border-[#155eef] hover:text-[#155eef] sm:w-auto">Track applications</Link>
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[["Job discovery", "Available", "Browse active remote opportunities from connected sources."], ["Saved jobs", "Available", "Save interesting roles and return to them later."], ["Applications", "Available", "Track roles you applied to and update their status."]].map(([title, status, text]) => (
               <article key={title} className="rounded-2xl border border-[#e4e9f0] bg-white p-5 shadow-sm">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#155eef]">{status}</p>
@@ -121,19 +121,19 @@ export default function DashboardShell({
             ))}
           </div>
 
-          <section id="discover" className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7">
+          <section id="discover" className="rounded-2xl border border-[#e4e9f0] bg-white p-5 shadow-sm sm:p-7">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-              <div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Discover</p><h2 className="mt-2 text-xl font-black">Find your next remote role</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#667085]">Browse active jobs collected from connected sources.</p></div>
-              <Link href="/jobs" className="w-fit rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">Open jobs</Link>
+              <div className="min-w-0"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Discover</p><h2 className="mt-2 text-xl font-black">Find your next remote role</h2><p className="mt-2 max-w-2xl text-sm leading-6 text-[#667085]">Browse active jobs collected from connected sources.</p></div>
+              <Link href="/jobs" className="w-full rounded-full bg-[#155eef] px-4 py-2.5 text-center text-sm font-bold text-white hover:bg-[#0b4dcc] sm:w-fit">Open jobs</Link>
             </div>
           </section>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <section id="saved" className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Saved jobs</p><h2 className="mt-2 text-xl font-black">Keep opportunities close</h2><p className="mt-3 text-sm leading-6 text-[#667085]">Save roles from any job details page and find them here.</p><Link href="/dashboard/saved" className="mt-6 inline-flex rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">View saved jobs</Link></section>
-            <section id="applications" className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Applications</p><h2 className="mt-2 text-xl font-black">Stay organized</h2><p className="mt-3 text-sm leading-6 text-[#667085]">Track jobs you have applied to and update the status as your application progresses.</p><Link href="/dashboard/applications" className="mt-6 inline-flex rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">View applications</Link></section>
+          <div className="grid gap-5 md:grid-cols-2 sm:gap-6">
+            <section id="saved" className="rounded-2xl border border-[#e4e9f0] bg-white p-5 shadow-sm sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Saved jobs</p><h2 className="mt-2 text-xl font-black">Keep opportunities close</h2><p className="mt-3 text-sm leading-6 text-[#667085]">Save roles from any job details page and find them here.</p><Link href="/dashboard/saved" className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc] sm:w-auto">View saved jobs</Link></section>
+            <section id="applications" className="rounded-2xl border border-[#e4e9f0] bg-white p-5 shadow-sm sm:p-7"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Applications</p><h2 className="mt-2 text-xl font-black">Stay organized</h2><p className="mt-3 text-sm leading-6 text-[#667085]">Track jobs you have applied to and update the status as your application progresses.</p><Link href="/dashboard/applications" className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc] sm:w-auto">View applications</Link></section>
           </div>
 
-          <section className="rounded-2xl border border-[#e4e9f0] bg-white p-6 shadow-sm sm:p-7"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Profile</p><h2 className="mt-2 text-xl font-black">Keep your information up to date</h2><p className="mt-2 text-sm leading-6 text-[#667085]">Update your basic profile details whenever you need to.</p></div><Link href="/dashboard/profile" className="w-fit rounded-full bg-[#155eef] px-4 py-2.5 text-sm font-bold text-white hover:bg-[#0b4dcc]">Edit profile</Link></div></section>
+          <section className="rounded-2xl border border-[#e4e9f0] bg-white p-5 shadow-sm sm:p-7"><div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"><div className="min-w-0"><p className="text-xs font-bold uppercase tracking-[0.14em] text-[#98a2b3]">Profile</p><h2 className="mt-2 text-xl font-black">Keep your information up to date</h2><p className="mt-2 text-sm leading-6 text-[#667085]">Update your basic profile details whenever you need to.</p></div><Link href="/dashboard/profile" className="w-full rounded-full bg-[#155eef] px-4 py-2.5 text-center text-sm font-bold text-white hover:bg-[#0b4dcc] sm:w-fit">Edit profile</Link></div></section>
         </section>
       </div>
     </main>
